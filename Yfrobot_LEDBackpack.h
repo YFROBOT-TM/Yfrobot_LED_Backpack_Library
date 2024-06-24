@@ -477,4 +477,136 @@ private:
 };
 
 
+/*********************************3-bit 7-segment temperature&Battery level displays of YFROBOT**************************************/
+#define RAW_BITS 0 ///< Issue 7-segment data as raw bits
+
+/*!
+    @brief  Class for  3-bit 7-segment temperature&Battery level displays of YFROBOT.
+*/
+class Yfrobot_3bit_7segment_tb : public Yfrobot_LEDBackpack {
+public:
+  /*!
+    @brief  Constructor for 7-segment temperature&Battery level displays.
+  */
+  Yfrobot_3bit_7segment_tb(void);
+
+  /*!
+    @brief   Issue single character to display.
+    @param   c Character to write (ASCII character, not numeric).
+    @return  1 if character written, else 0 (non-ASCII characters).
+  */
+  size_t write(char c);
+
+  /*!
+    @brief   Write characters from buffer to display.
+    @param   buffer Character array to write
+    @param   size   Number of characters to write
+    @return  Number of characters written
+  */
+  size_t write(const char *buffer, size_t size);
+
+  /*!
+    @brief  Print unsigned byte-size numeric value to 7-segment display.
+    @param  b     Numeric value.
+    @param  base  Number base (default = RAW_BITS = raw bits)
+  */
+//   void print(unsigned char b, int base = RAW_BITS);
+
+  /*!
+    @brief  Print integer value to 7-segment display.
+    @param  n     Numeric value.
+    @param  base  Number base (default = DEC = base 10)
+  */
+//   void print(int n);
+
+  /*!
+    @brief  Print unsigned integer value to 7-segment display.
+    @param  n     Numeric value.
+    @param  base  Number base (default = DEC = base 10)
+  */
+//   void print(unsigned int n);
+
+  /*!
+    @brief  Print long integer value to 7-segment display.
+    @param  n     Numeric value.
+    @param  base  Number base (default = DEC = base 10)
+  */
+//   void print(long n);
+
+  /*!
+    @brief  Print unsigned long integer value to 7-segment display.
+    @param  n     Numeric value.
+    @param  base  Number base (default = DEC = base 10)
+  */
+//   void print(unsigned long n);
+
+  /*!
+    @brief  Print double-precision float value to 7-segment display.
+    @param  n       Numeric value.
+    @param  digits  Fractional-part digits.
+  */
+  void print(double n, int digits = 1);
+
+  /*!
+    @brief  Write raw segment bits into display buffer.
+    @param  x        Character position (0-3).
+    @param  bitmask  Segment bits.
+  */
+  void writeDigitRaw(uint8_t x, uint8_t bitmask);
+
+  /*!
+    @brief  Set specific digit # to a numeric value.
+    @param  x    Character position.
+    @param  num  Numeric (not ASCII) value.
+    @param  dot  If true, light corresponding decimal.
+  */
+  void writeDigitNum(uint8_t x, uint8_t num, bool dot = false);
+
+  /*!
+    @brief  Set specific digit # to a character value.
+    @param  x    Character position.
+    @param  c    Character (ASCII).
+    @param  dot  If true, light corresponding decimal.
+  */
+  void writeDigitAscii(uint8_t x, uint8_t c, bool dot = false);
+
+  /*!
+    @brief  Set or unset colon segment.
+    @param  state  'true' to enable colon, 'false' for off.
+  */
+  void drawColon(bool state);
+
+  /*!
+    @brief  General integer-printing function used by some of the print()
+            variants.
+    @param  n     Numeric value.
+    @param  base  Base (2 = binary).
+  */
+//   void printNumber(long n);
+
+  /*!
+    @brief  General float-printing function used by some of the print()
+            variants.
+    @param  n           Numeric value.
+    @param  fracDigits  Fractional-part digits.
+    @param  base        Base (default DEC = base 10).
+  */
+  void printFloat(double n, uint8_t fracDigits = 1, uint8_t base = DEC);
+
+  /*!
+    @brief  Light display segments in an error-indicating configuration.
+  */
+  void printError(void);
+
+  /*!
+    @brief  Issue colon-on directly to display (bypass buffer).
+  */
+  void writeColon(uint8_t tb);
+
+private:
+  uint8_t position; ///< Current print position, 0-3
+};
+
+
+
 #endif // Yfrobot_LEDBackpack_h

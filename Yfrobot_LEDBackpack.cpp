@@ -844,3 +844,233 @@ void Yfrobot_3bit_7segment::printError(void) {
 }
 
 
+
+/******************************* 3-bit 7-segment temperature&Battery level object of YFROBOT 20240624 */
+
+Yfrobot_3bit_7segment_tb::Yfrobot_3bit_7segment_tb(void) { position = 0; }
+
+// void Yfrobot_3bit_7segment_tb::print(unsigned long n) { printFloat((float)n, 1);}
+
+// void Yfrobot_3bit_7segment_tb::print(unsigned char b) { printFloat((float)b, 1);}
+
+// void Yfrobot_3bit_7segment_tb::print(int n) { printFloat((float)n, 1); }
+
+// void Yfrobot_3bit_7segment_tb::print(unsigned int n) { printFloat((float)n, 1);}
+
+void Yfrobot_3bit_7segment_tb::print(double n, int digits) { Serial.println("float");Serial.println(digits); printFloat(n, digits); }
+
+size_t Yfrobot_3bit_7segment_tb::write(char c) {
+
+  uint8_t r = 0;
+
+  if (c == '\n')
+    position = 0;
+  if (c == '\r')
+    position = 0;
+
+  if ((c >= ' ') && (c <= 127)) {
+    writeDigitAscii(position, c);
+    r = 1;
+  }
+
+  position++;
+  if (position == 2)
+    position++;
+
+  return r;
+}
+
+size_t Yfrobot_3bit_7segment_tb::write(const char *buffer, size_t size) {
+  size_t n = 0;
+
+  while (n < size) {
+    write(buffer[n]);
+    n++;
+  }
+
+  // Clear unwritten positions
+  for (uint8_t i = position; i < 5; i++) {
+    writeDigitRaw(i, 0x00);
+  }
+
+  return n;
+}
+
+void Yfrobot_3bit_7segment_tb::writeDigitRaw(uint8_t d, uint8_t bitmask) {
+  if (d > 4)
+    return;
+  displaybuffer[d] = bitmask;
+}
+
+void Yfrobot_3bit_7segment_tb::drawColon(bool state) {
+  if (state){
+    displaybuffer[0] = 0x80;
+    displaybuffer[3] = 0x80;
+  }
+  else{
+    displaybuffer[0] = 0;
+    displaybuffer[3] = 0;
+  }
+}
+
+void Yfrobot_3bit_7segment_tb::writeColon(uint8_t tb) {
+  uint8_t buffer[3];
+  if(tb == 1){
+    buffer[0] = 2; // start at address $02 ，摄氏度
+  }else{
+    buffer[0] = 6; // start at address $06 ，电量
+  }
+    buffer[1] = 0x80;
+    buffer[2] = 0x00;
+
+    i2c_dev->write(buffer, 3);
+}
+
+void Yfrobot_3bit_7segment_tb::writeDigitNum(uint8_t d, uint8_t num, bool dot) {
+  if (d > 4 || num > 15)
+    return;
+
+  if (num >= 10) { // Hex characters
+    switch (num) {
+    case 10:
+      writeDigitAscii(d, 'a', dot);
+      break;
+    case 11:
+      writeDigitAscii(d, 'B', dot);
+      break;
+    case 12:
+      writeDigitAscii(d, 'C', dot);
+      break;
+    case 13:
+      writeDigitAscii(d, 'd', dot);
+      break;
+    case 14:
+      writeDigitAscii(d, 'E', dot);
+      break;
+    case 15:
+      writeDigitAscii(d, 'F', dot);
+      break;
+    }
+  }
+
+  else
+    writeDigitAscii(d, num + 48, dot); // use ASCII offset
+}
+
+void Yfrobot_3bit_7segment_tb::writeDigitAscii(uint8_t d, uint8_t c, bool dot) {
+  if (d > 4)
+    return;
+
+  uint8_t font = pgm_read_byte(sevensegfonttable + c - 32);
+
+  writeDigitRaw(d, font);
+
+  if (dot)
+    writeDigitRaw(0, displaybuffer[0] | 0x80);
+}
+
+
+void Yfrobot_3bit_7segment_tb::printFloat(double n, uint8_t fracDigits, uint8_t base) {
+  uint8_t numericDigits = 3; // available digits on display
+  bool isNegative = false;   // true if the number is negative
+
+  // is the number negative?
+  if (n < 0) {
+    isNegative = true; // need to draw sign later
+    --numericDigits;   // the sign will take up one digit
+    n *= -1;           // pretend the number is positive
+
+    if(n >= 100){
+        // 提取十位数和个位数
+        uint8_t tens = ((int)n / 10) % 10; // 获取十位
+        uint8_t ones = (int)n % 10;       // 获取个位
+        // 将十位和个位组合成一个新的两位数
+        n = tens * 10 + ones;
+    }
+    fracDigits = 0;// 不保留小数
+  } else if (n >= 100){
+    int n_int = (int)n;
+    // 提取十位数和个位数
+    uint8_t tens = (n_int / 10) % 10; // 获取十位
+    uint8_t ones = n_int % 10;       // 获取个位
+    float n_float = n - n_int;       // 获取小数
+    // 将十位和个位组合成一个新的两位数
+    n = tens * 10 + ones + n_float;
+  }
+  
+    Serial.print("tooBig    ");
+    Serial.println(n);
+
+  // calculate the factor required to shift all fractional digits
+  // into the integer part of the number
+  double toIntFactor = 1.0;
+  for (int i = 0; i < fracDigits; ++i)
+    toIntFactor *= base;
+
+  // create integer containing digits to display by applying
+  // shifting factor and rounding adjustment
+  uint32_t displayNumber = n * toIntFactor + 0.5;
+
+  
+    Serial.print("tooBig    ");
+    Serial.println(displayNumber);
+
+  // calculate upper bound on displayNumber given
+  // available digits on display
+  uint32_t tooBig = 1;
+  for (int i = 0; i < numericDigits; ++i)
+    tooBig *= base;
+
+    Serial.print("tooBig    ");
+    Serial.println(tooBig);
+
+  // if displayNumber is too large, try fewer fractional digits
+  while (displayNumber >= tooBig) {
+    --fracDigits;
+    toIntFactor /= base;
+    displayNumber = n * toIntFactor + 0.5;
+  }
+
+  // did toIntFactor shift the decimal off the display?
+  if (toIntFactor < 1) {
+    printError();
+  } else {
+    // otherwise, display the number
+    int8_t displayPos = 3;
+
+    for (uint8_t i = 0; displayNumber || i <= fracDigits; ++i) {
+      bool displayDecimal = (fracDigits != 0 && i == fracDigits);
+      writeDigitNum(displayPos--, displayNumber % base, displayDecimal);
+      if (displayPos == 2)
+        writeDigitRaw(displayPos--, 0x00);
+        
+    //   if (displayPos == 0)
+    //     writeDigitRaw(0, 0x80);
+      displayNumber /= base;
+    }
+
+    // display negative sign if negative
+    if (isNegative){
+    //   writeDigitRaw(displayPos--, 0x40);
+        if (displayPos >= 0) { // Ensure there's a position left for the sign
+            writeDigitRaw(displayPos--, 0x40);
+        } else {
+            // Handle error: not enough space for negative sign
+            printError();
+            return;
+        }
+    }
+
+    // clear remaining display positions
+    while (displayPos >= 0){
+      writeDigitRaw(displayPos, 0x00);
+      displayPos--;
+    }
+  }
+}
+
+void Yfrobot_3bit_7segment_tb::printError(void) {
+  for (uint8_t i = 0; i < SEVENSEG_DIGITS; ++i) {
+    writeDigitRaw(i, (i == 2 ? 0x00 : 0x40));
+  }
+}

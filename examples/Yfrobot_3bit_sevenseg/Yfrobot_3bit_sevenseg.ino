@@ -26,15 +26,19 @@ void loop() {
   delay(1500);
 
   // print a floating point
-  matrix.print(13.1);
+  matrix.print(13.1);  // 默认保留2位小数
   matrix.writeDisplay();
   delay(1500);
   // print a floating point
-  matrix.print(3.1);
+  matrix.print(3.12);  // 默认保留2位小数
   matrix.writeDisplay();
   delay(1500);
   // print a floating point
-  matrix.print(131.2);
+  matrix.print(3.13, 1);  // 保留1位小数
+  matrix.writeDisplay();
+  delay(1500);
+  // print a floating point
+  matrix.print(131.2);  // 超出显示范围，忽略小数
   matrix.writeDisplay();
   delay(1500);
 
