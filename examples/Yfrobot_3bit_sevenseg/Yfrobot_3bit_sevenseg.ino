@@ -10,7 +10,8 @@ void setup() {
   Serial.begin(9600);
   Serial.println("3BIT 7 Segment Backpack Test");
   matrix.begin(0x70);
-  matrix.setBrightness(1);  // level 0-15
+  matrix.setBrightness(15);  // level 0-15
+
 }
 
 void loop() {
@@ -41,30 +42,24 @@ void loop() {
   matrix.print("SEG");
   matrix.writeDisplay();
   delay(1000);
+  
+  matrix.print(1);
+  matrix.writeDisplay();
+  delay(1500);
 
   // print
-  for (uint16_t counter = 0; counter < 999; counter+=111) {
+  for (uint16_t counter = 0; counter <= 999; counter+=111) {
     matrix.print(counter);
     matrix.writeDisplay();
-    delay(500);
+    delay(100);
   }
 
   // method #2 - draw each digit
-  uint16_t blinkcounter = 0;
-  boolean drawDots = false;
-  for (uint16_t counter = 0; counter < 999; counter+=111) {
+  boolean drawDots = true;
+  for (uint16_t counter = 0; counter <= 999; counter+=111) {
     matrix.writeDigitNum(0, (counter / 100), drawDots);
     matrix.writeDigitNum(1, (counter / 10) % 10, drawDots);
     matrix.writeDigitNum(3, counter  % 10, drawDots);
-
-    blinkcounter+=50;
-    if (blinkcounter < 500) {
-      drawDots = false;
-    } else if (blinkcounter < 1000) {
-      drawDots = true;
-    } else {
-      blinkcounter = 0;
-    }
     matrix.writeDisplay();
     delay(500);
   }
