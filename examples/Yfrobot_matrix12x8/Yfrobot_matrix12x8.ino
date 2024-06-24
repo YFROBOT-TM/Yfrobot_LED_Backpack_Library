@@ -5,7 +5,7 @@
 
 #include "Yfrobot_LEDBackpack.h"
 
-Adafruit_8x16matrix matrix = Adafruit_8x16matrix();
+Yfrobot_8x12matrix matrix = Yfrobot_8x12matrix();
 
 int smileyFace[8][12] = {
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -59,16 +59,16 @@ void loop() {
   for (int x = 0; x < 3; x++) {
     for (int i = 0; i <= 11; i++) {
       matrix.setBrightness(i);
-      draw8x16Matrix(0, 0, smileyFace);
-      //   draw8x16Matrix(2, 5, smileyFace);
+      draw8x12Matrix(0, 0, smileyFace);
+      //   draw8x12Matrix(2, 5, smileyFace);
       matrix.writeDisplay();
       delay(30);
     }
 
     for (int i = 11; i >= 0; i--) {
       matrix.setBrightness(i);
-      draw8x16Matrix(0, 0, smileyFace);
-      //   draw8x16Matrix(2, 5, smileyFace);
+      draw8x12Matrix(0, 0, smileyFace);
+      //   draw8x12Matrix(2, 5, smileyFace);
       matrix.writeDisplay();
       delay(30);
     }
@@ -180,7 +180,7 @@ void loop() {
  * 该函数通过遍历笑脸图案的二维数组，将每个非零像素绘制到点阵屏幕上。
  * 通过调整x和y参数，可以在点阵屏幕上的任意位置显示图案。
  */
-void draw8x16Matrix(int16_t x, int16_t y, const int yf_bitmap[8][12]) {
+void draw8x12Matrix(int16_t x, int16_t y, const int yf_bitmap[8][12]) {
   matrix.startWrite();  // 开始点阵屏幕的批量写操作，可以提高绘制效率。
 
   for (int16_t row = 7; row >= 0 + x; row--) {           // 从数组的顶部开始遍历每一行，直到达到显示区域的顶部。

@@ -457,6 +457,46 @@ void Adafruit_8x16matrix::drawPixel(int16_t x, int16_t y, uint16_t color) {
   }
 }
 
+/******************************* 8x12 (8 rows and 12 columns) MATRIX object of YFROBOT 20240624 */
+
+Yfrobot_8x12matrix::Yfrobot_8x12matrix(void) : Adafruit_GFX(8, 16) {}
+
+void Yfrobot_8x12matrix::drawPixel(int16_t x, int16_t y, uint16_t color) {
+
+  // check rotation, move pixel around if necessary
+  switch (getRotation()) {
+  case 2:
+    _swap_int16_t(x, y);
+    x = 16 - x - 1;
+    break;
+  case 3:
+    x = 16 - x - 1;
+    y = 8 - y - 1;
+    break;
+  case 0:
+    _swap_int16_t(x, y);
+    y = 8 - y - 1;
+    break;
+  }
+  /*
+  Serial.print("("); Serial.print(x);
+  Serial.print(","); Serial.print(y);
+  Serial.println(")");
+  */
+
+  if ((y < 0) || (y >= 8))
+    return;
+  if ((x < 0) || (x >= 16))
+    return;
+
+  if (color) {
+    displaybuffer[y] |= 1 << x;
+  } else {
+    displaybuffer[y] &= ~(1 << x);
+  }
+}
+
+
 /******************************* 16x8 MINI MATRIX OBJECT */
 
 Adafruit_8x16minimatrix::Adafruit_8x16minimatrix(void) : Adafruit_GFX(8, 16) {}

@@ -210,6 +210,30 @@ public:
   void drawPixel(int16_t x, int16_t y, uint16_t color);
 };
 
+
+/****************** 8x12 (8 rows and 12 columns) MATRIX displays of YFROBOT**************************/
+
+/*!
+    @brief  Class for 8x12 pixel single-color matrices.
+*/
+class Yfrobot_8x12matrix : public Yfrobot_LEDBackpack, public Adafruit_GFX {
+public:
+  /*!
+    @brief  Constructor for 8x12 pixel single-color matrices.
+  */
+  Yfrobot_8x12matrix(void);
+
+  /*!
+    @brief  Lowest-level pixel drawing function required by Adafruit_GFX.
+            Does not have an immediate effect -- must call writeDisplay()
+            after any drawing operations to refresh display contents.
+    @param  x      Pixel column (horizontal).
+    @param  y      Pixel row (vertical).
+    @param  color  Pixel color (1 = pixel on, 0 = pixel off).
+  */
+  void drawPixel(int16_t x, int16_t y, uint16_t color);
+};
+
 /*!
     @brief  Class for 8x16 pixel single-color mini matrices.
 */
