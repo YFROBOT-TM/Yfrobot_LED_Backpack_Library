@@ -1,0 +1,15 @@
+{
+    "name": "Yfrobot LED Backpack Library",
+    "keywords": "yfrobot, LED backpack, matrix",
+    "description": "Library that makes Yfrobot LED Backpack modules work easy to use.",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/YFROBOT-TM/Yfrobot_LED_Backpack_Library"
+    },
+    "frameworks": "arduino",
+    "platforms": [
+      "atmelavr",
+      "atmelsam"
+    ]
+}
