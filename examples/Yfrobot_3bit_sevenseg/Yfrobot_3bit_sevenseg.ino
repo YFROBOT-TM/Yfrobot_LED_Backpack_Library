@@ -8,8 +8,9 @@ Yfrobot_3bit_7segment matrix = Yfrobot_3bit_7segment();
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("7 Segment Backpack Test");
+  Serial.println("3BIT 7 Segment Backpack Test");
   matrix.begin(0x70);
+  matrix.setBrightness(1);  // level 0-15
 }
 
 void loop() {

@@ -22,8 +22,8 @@ void setup() {
   Serial.begin(9600);
   Serial.println("16x8 LED Matrix Test");
 
-  matrix.begin(0x70);  // pass in the address
-  matrix.setBrightness(1);
+  matrix.begin(0x70);       // pass in the address
+  matrix.setBrightness(1);  // level 0-15
 }
 
 static const uint8_t PROGMEM smile_bmp[] = { B00111100,
@@ -57,16 +57,16 @@ void loop() {
   matrix.setRotation(0);
   matrix.blinkRate(0);
   for (int x = 0; x < 3; x++) {
-    for (int i = 0; i <= 11; i++) {
-      matrix.setBrightness(i);
+    for (int i = 0; i <= 15; i++) {
+      matrix.setBrightness(i);  // level 0-15
       draw8x12Matrix(0, 0, smileyFace);
       //   draw8x12Matrix(2, 5, smileyFace);
       matrix.writeDisplay();
       delay(30);
     }
 
-    for (int i = 11; i >= 0; i--) {
-      matrix.setBrightness(i);
+    for (int i = 15; i >= 0; i--) {
+      matrix.setBrightness(i);  // level 0-15
       draw8x12Matrix(0, 0, smileyFace);
       //   draw8x12Matrix(2, 5, smileyFace);
       matrix.writeDisplay();
