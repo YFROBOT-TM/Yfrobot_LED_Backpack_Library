@@ -278,6 +278,14 @@ public:
 };
 
 /*!
+    @brief  YFROBOT wrapper for 8x8 pixel single-color matrices.
+*/
+class Yfrobot_8x8matrix : public Adafruit_8x8matrix {
+public:
+  Yfrobot_8x8matrix(void) : Adafruit_8x8matrix() {}
+};
+
+/*!
     @brief  Class for bi-color matrices.
 */
 class Adafruit_BicolorMatrix : public Yfrobot_LEDBackpack,
@@ -300,6 +308,173 @@ public:
 };
 
 #define RAW_BITS 0 ///< Issue 7-segment data as raw bits
+
+/*!
+    @brief  Class for YFROBOT four-digit 7-segment displays.
+*/
+class Yfrobot_4bit_7segment : public Yfrobot_LEDBackpack {
+public:
+  /*!
+    @brief  Constructor for four-digit 7-segment displays.
+  */
+  Yfrobot_4bit_7segment(void);
+
+  /*!
+    @brief   Issue single character to display.
+    @param   c Character to write (ASCII character, not numeric).
+    @return  1 if character written, else 0 (non-ASCII characters).
+  */
+  size_t write(char c);
+
+  /*!
+    @brief   Write characters from buffer to display.
+    @param   buffer Character array to write.
+    @param   size   Number of characters to write.
+    @return  Number of characters written.
+  */
+  size_t write(const char *buffer, size_t size);
+
+  /*!
+    @brief  Print byte-size numeric value to 7-segment display.
+    @param  c Numeric value.
+  */
+  void print(char c);
+
+  /*!
+    @brief  Print unsigned byte-size numeric value to 7-segment display.
+    @param  b     Numeric value.
+    @param  base  Number base (default = RAW_BITS = raw bits).
+  */
+  void print(unsigned char b, int base = RAW_BITS);
+
+  /*!
+    @brief  Print integer value to 7-segment display.
+    @param  n     Numeric value.
+    @param  base  Number base (default = DEC = base 10).
+  */
+  void print(int n, int base = DEC);
+
+  /*!
+    @brief  Print unsigned integer value to 7-segment display.
+    @param  n     Numeric value.
+    @param  base  Number base (default = DEC = base 10).
+  */
+  void print(unsigned int n, int base = DEC);
+
+  /*!
+    @brief  Print long integer value to 7-segment display.
+    @param  n     Numeric value.
+    @param  base  Number base (default = DEC = base 10).
+  */
+  void print(long n, int base = DEC);
+
+  /*!
+    @brief  Print unsigned long integer value to 7-segment display.
+    @param  n     Numeric value.
+    @param  base  Number base (default = DEC = base 10).
+  */
+  void print(unsigned long n, int base = DEC);
+
+  /*!
+    @brief  Print double-precision float value to 7-segment display.
+    @param  n       Numeric value.
+    @param  digits  Fractional-part digits.
+  */
+  void print(double n, int digits = 2);
+
+  /*!
+    @brief  Print from a String object to 7-segment display.
+    @param  c  String object, passed by reference.
+  */
+  void print(const String &c);
+
+  /*!
+    @brief  Print from a C-style string array to 7-segment display.
+    @param  c  Array of characters.
+  */
+  void print(const char c[]);
+
+  /*!
+    @brief  Write raw segment bits into display buffer.
+    @param  x        Character position (0-4, where 2 is colon slot).
+    @param  bitmask  Segment bits.
+  */
+  void writeDigitRaw(uint8_t x, uint8_t bitmask);
+
+  /*!
+    @brief  Set specific digit # to a numeric value.
+    @param  x    Character position.
+    @param  num  Numeric (not ASCII) value.
+    @param  dot  If true, light corresponding decimal point.
+  */
+  void writeDigitNum(uint8_t x, uint8_t num, bool dot = false);
+
+  /*!
+    @brief  Set specific digit # to a character value.
+    @param  x    Character position.
+    @param  c    Character (ASCII).
+    @param  dot  If true, light corresponding decimal point.
+  */
+  void writeDigitAscii(uint8_t x, uint8_t c, bool dot = false);
+
+  /*!
+    @brief  Set or unset clock dots D1+D2.
+    @param  state  'true' to enable, 'false' for off.
+  */
+  void drawColon(bool state);
+
+  /*!
+    @brief  Set or unset decimal point D3.
+    @param  state  'true' to enable, 'false' for off.
+  */
+  void drawDotD3(bool state);
+
+  /*!
+    @brief  Set or unset decimal point D4.
+    @param  state  'true' to enable, 'false' for off.
+  */
+  void drawDotD4(bool state);
+
+  /*!
+    @brief  Set or unset decimal point D5.
+    @param  state  'true' to enable, 'false' for off.
+  */
+  void drawDotD5(bool state);
+
+  /*!
+    @brief  Clear all auxiliary dots D1-D5.
+  */
+  void clearDots(void);
+
+  /*!
+    @brief  General integer-printing function used by some print() variants.
+    @param  n     Numeric value.
+    @param  base  Base (2 = binary).
+  */
+  void printNumber(long n, uint8_t base = 2);
+
+  /*!
+    @brief  General float-printing function used by some print() variants.
+    @param  n           Numeric value.
+    @param  fracDigits  Fractional-part digits.
+    @param  base        Base (default DEC = base 10).
+  */
+  void printFloat(double n, uint8_t fracDigits = 2, uint8_t base = DEC);
+
+  /*!
+    @brief  Light display segments in an error-indicating configuration.
+  */
+  void printError(void);
+
+  /*!
+    @brief  Push current clock-dot state to the display.
+  */
+  void writeColon(void);
+
+private:
+  void setDotBit(uint8_t bufferIndex, bool state);
+  uint8_t position; ///< Current print position, 0-4 (2 is skipped).
+};
 
 /*!
     @brief  Class for four-digit alphanumeric displays.

@@ -360,6 +360,225 @@ void Adafruit_AlphaNum4::writeDigitAscii(uint8_t n, uint8_t a, bool d) {
     displaybuffer[n] |= (1 << 14);
 }
 
+/******************************* 4-digit 7-segment object of YFROBOT */
+
+Yfrobot_4bit_7segment::Yfrobot_4bit_7segment(void) { position = 0; }
+
+void Yfrobot_4bit_7segment::print(const String &c) {
+  write(c.c_str(), c.length());
+}
+
+void Yfrobot_4bit_7segment::print(const char c[]) { write(c, strlen(c)); }
+
+void Yfrobot_4bit_7segment::print(char c) { write(c); }
+
+void Yfrobot_4bit_7segment::print(unsigned long n, int base) {
+  if (base == 0)
+    write(n);
+  else
+    printNumber(n, base);
+}
+
+void Yfrobot_4bit_7segment::print(unsigned char b, int base) {
+  print((unsigned long)b, base);
+}
+
+void Yfrobot_4bit_7segment::print(int n, int base) { print((long)n, base); }
+
+void Yfrobot_4bit_7segment::print(unsigned int n, int base) {
+  print((unsigned long)n, base);
+}
+
+void Yfrobot_4bit_7segment::print(double n, int digits) {
+  printFloat(n, digits);
+}
+
+size_t Yfrobot_4bit_7segment::write(char c) {
+  uint8_t r = 0;
+
+  if (c == '\n')
+    position = 0;
+  if (c == '\r')
+    position = 0;
+
+  if ((c >= ' ') && (c <= 127)) {
+    writeDigitAscii(position, c);
+    r = 1;
+  }
+
+  position++;
+  if (position == 2)
+    position++;
+
+  return r;
+}
+
+size_t Yfrobot_4bit_7segment::write(const char *buffer, size_t size) {
+  size_t n = 0;
+
+  while (n < size) {
+    write(buffer[n]);
+    n++;
+  }
+
+  for (uint8_t i = position; i < 5; i++) {
+    writeDigitRaw(i, 0x00);
+  }
+
+  return n;
+}
+
+void Yfrobot_4bit_7segment::writeDigitRaw(uint8_t d, uint8_t bitmask) {
+  if (d > 4)
+    return;
+  displaybuffer[d] = bitmask;
+}
+
+void Yfrobot_4bit_7segment::setDotBit(uint8_t bufferIndex, bool state) {
+  if (bufferIndex > 4)
+    return;
+
+  if (state)
+    displaybuffer[bufferIndex] |= 0x80;
+  else
+    displaybuffer[bufferIndex] &= ~0x80;
+}
+
+void Yfrobot_4bit_7segment::drawColon(bool state) {
+  // D1+D2 clock dots are wired to ROW7 + COM1 on this module.
+  setDotBit(1, state);
+}
+
+void Yfrobot_4bit_7segment::writeColon(void) {
+  writeDisplay();
+}
+
+void Yfrobot_4bit_7segment::drawDotD3(bool state) {
+  // Current schematic assumption: D3 uses ROW7 + COM0.
+  setDotBit(0, state);
+}
+
+void Yfrobot_4bit_7segment::drawDotD4(bool state) {
+  setDotBit(3, state);
+}
+
+void Yfrobot_4bit_7segment::drawDotD5(bool state) {
+  setDotBit(4, state);
+}
+
+void Yfrobot_4bit_7segment::clearDots(void) {
+  drawColon(false);
+  drawDotD3(false);
+  drawDotD4(false);
+  drawDotD5(false);
+}
+
+void Yfrobot_4bit_7segment::writeDigitNum(uint8_t d, uint8_t num, bool dot) {
+  if (d > 4 || num > 15)
+    return;
+
+  if (num >= 10) {
+    switch (num) {
+    case 10:
+      writeDigitAscii(d, 'a', dot);
+      break;
+    case 11:
+      writeDigitAscii(d, 'B', dot);
+      break;
+    case 12:
+      writeDigitAscii(d, 'C', dot);
+      break;
+    case 13:
+      writeDigitAscii(d, 'd', dot);
+      break;
+    case 14:
+      writeDigitAscii(d, 'E', dot);
+      break;
+    case 15:
+      writeDigitAscii(d, 'F', dot);
+      break;
+    }
+  } else {
+    writeDigitAscii(d, num + 48, dot);
+  }
+}
+
+void Yfrobot_4bit_7segment::writeDigitAscii(uint8_t d, uint8_t c, bool dot) {
+  if (d > 4)
+    return;
+
+  uint8_t font = pgm_read_byte(sevensegfonttable + c - 32);
+  writeDigitRaw(d, font | (dot << 7));
+}
+
+void Yfrobot_4bit_7segment::print(long n, int base) { printNumber(n, base); }
+
+void Yfrobot_4bit_7segment::printNumber(long n, uint8_t base) {
+  printFloat(n, 0, base);
+}
+
+void Yfrobot_4bit_7segment::printFloat(double n, uint8_t fracDigits,
+                                        uint8_t base) {
+  uint8_t numericDigits = 4;
+  bool isNegative = false;
+
+  if (n < 0) {
+    isNegative = true;
+    --numericDigits;
+    n *= -1;
+  }
+
+  double toIntFactor = 1.0;
+  for (int i = 0; i < fracDigits; ++i)
+    toIntFactor *= base;
+
+  uint32_t displayNumber = n * toIntFactor + 0.5;
+
+  uint32_t tooBig = 1;
+  for (int i = 0; i < numericDigits; ++i)
+    tooBig *= base;
+
+  while (displayNumber >= tooBig) {
+    --fracDigits;
+    toIntFactor /= base;
+    displayNumber = n * toIntFactor + 0.5;
+  }
+
+  if (toIntFactor < 1) {
+    printError();
+  } else {
+    int8_t displayPos = 4;
+
+    for (uint8_t i = 0; displayNumber || i <= fracDigits; ++i) {
+      bool displayDecimal = (fracDigits != 0 && i == fracDigits);
+      writeDigitNum(displayPos--, displayNumber % base, displayDecimal);
+      if (displayPos == 2)
+        writeDigitRaw(displayPos--, 0x00);
+      displayNumber /= base;
+    }
+
+    if (isNegative) {
+      if (displayPos >= 0) {
+        writeDigitRaw(displayPos--, 0x40);
+      } else {
+        printError();
+        return;
+      }
+    }
+
+    while (displayPos >= 0) {
+      writeDigitRaw(displayPos, 0x00);
+      displayPos--;
+    }
+  }
+}
+
+void Yfrobot_4bit_7segment::printError(void) {
+  for (uint8_t i = 0; i < SEVENSEG_DIGITS; ++i) {
+    writeDigitRaw(i, (i == 2 ? 0x00 : 0x40));
+  }
+}
+
 /******************************* 24 BARGRAPH OBJECT */
 
 Adafruit_24bargraph::Adafruit_24bargraph(void) {}
