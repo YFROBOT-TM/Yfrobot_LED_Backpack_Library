@@ -521,6 +521,7 @@ void Yfrobot_4bit_7segment::printFloat(double n, uint8_t fracDigits,
                                         uint8_t base) {
   uint8_t numericDigits = 4;
   bool isNegative = false;
+  int8_t decimalPosition = -1;
 
   if (n < 0) {
     isNegative = true;
@@ -549,9 +550,15 @@ void Yfrobot_4bit_7segment::printFloat(double n, uint8_t fracDigits,
   } else {
     int8_t displayPos = 4;
 
+    // 4位数码管的辅助点位为非标准布局，进入数字格式化前先清掉时钟点和独立小数点。
+    clearDots();
+
     for (uint8_t i = 0; displayNumber || i <= fracDigits; ++i) {
       bool displayDecimal = (fracDigits != 0 && i == fracDigits);
-      writeDigitNum(displayPos--, displayNumber % base, displayDecimal);
+      if (displayDecimal)
+        decimalPosition = displayPos;
+
+      writeDigitNum(displayPos--, displayNumber % base, false);
       if (displayPos == 2)
         writeDigitRaw(displayPos--, 0x00);
       displayNumber /= base;
@@ -569,6 +576,22 @@ void Yfrobot_4bit_7segment::printFloat(double n, uint8_t fracDigits,
     while (displayPos >= 0) {
       writeDigitRaw(displayPos, 0x00);
       displayPos--;
+    }
+
+    // 当前 4位模块的小数点不在标准 4-digit 位置上：
+    // 第1位无小数点，第2/3/4位分别使用 D3/D4/D5。
+    switch (decimalPosition) {
+    case 1:
+      drawDotD3(true);
+      break;
+    case 3:
+      drawDotD4(true);
+      break;
+    case 4:
+      drawDotD5(true);
+      break;
+    default:
+      break;
     }
   }
 }
