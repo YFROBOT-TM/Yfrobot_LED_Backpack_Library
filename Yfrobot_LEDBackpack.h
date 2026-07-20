@@ -314,6 +314,12 @@ public:
 */
 class Yfrobot_4bit_7segment : public Yfrobot_LEDBackpack {
 public:
+  enum ClockDotMode {
+    CLOCK_DOTS_OFF = 0,
+    CLOCK_DOTS_ON = 1,
+    CLOCK_DOTS_BLINK = 2
+  };
+
   /*!
     @brief  Constructor for four-digit 7-segment displays.
   */
@@ -445,6 +451,18 @@ public:
     @brief  Clear all auxiliary dots D1-D5.
   */
   void clearDots(void);
+
+  /*!
+    @brief  Display RTC time in HH:MM style.
+    @param  hour         Hour value.
+    @param  minute       Minute value.
+    @param  second       Second value, used for blink mode.
+    @param  dotMode      Clock dot mode.
+    @param  leadingZero  Show leading zero for hour when true.
+  */
+  void showClock(uint8_t hour, uint8_t minute, uint8_t second = 0,
+                 ClockDotMode dotMode = CLOCK_DOTS_ON,
+                 bool leadingZero = true);
 
   /*!
     @brief  General integer-printing function used by some print() variants.

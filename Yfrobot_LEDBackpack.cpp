@@ -473,6 +473,39 @@ void Yfrobot_4bit_7segment::clearDots(void) {
   drawDotD5(false);
 }
 
+void Yfrobot_4bit_7segment::showClock(uint8_t hour, uint8_t minute,
+                                      uint8_t second, ClockDotMode dotMode,
+                                      bool leadingZero) {
+  hour %= 100;
+  minute %= 100;
+
+  clear();
+  clearDots();
+
+  if (leadingZero || hour >= 10)
+    writeDigitNum(0, hour / 10);
+  else
+    writeDigitRaw(0, 0x00);
+
+  writeDigitNum(1, hour % 10);
+  writeDigitRaw(2, 0x00);
+  writeDigitNum(3, minute / 10);
+  writeDigitNum(4, minute % 10);
+
+  switch (dotMode) {
+  case CLOCK_DOTS_ON:
+    drawColon(true);
+    break;
+  case CLOCK_DOTS_BLINK:
+    drawColon((second % 2) == 0);
+    break;
+  case CLOCK_DOTS_OFF:
+  default:
+    drawColon(false);
+    break;
+  }
+}
+
 void Yfrobot_4bit_7segment::writeDigitNum(uint8_t d, uint8_t num, bool dot) {
   if (d > 4 || num > 15)
     return;

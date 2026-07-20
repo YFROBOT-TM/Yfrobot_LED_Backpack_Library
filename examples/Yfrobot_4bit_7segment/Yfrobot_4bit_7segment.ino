@@ -23,14 +23,12 @@ void setup() {
   display.begin(DISPLAY_ADDR);
 
   // 设置初始亮度。
-  display.setBrightness(15);
+  display.setBrightness(2);
 }
 
 void loop() {
   // 清空显示内容，刷新到屏幕。
   display.clear();
-  display.writeDisplay();
-  delay(300);
 
   // 显示整数。
   display.print(1234);
@@ -54,7 +52,7 @@ void loop() {
   display.writeDisplay();
   delay(1200);
 
-  // 显示负数-5.6。
+  // 显示负数-50.6。
   display.print(-50.6, 1);
   display.writeDisplay();
   delay(1200);
@@ -90,15 +88,19 @@ void loop() {
   display.writeDisplay();
   delay(1500);
 
-  // 时钟风格测试。
-  display.clear();
-  display.clearDots();
-  display.drawColon(true);
-  display.writeDigitNum(1, 2);
-  display.writeDigitNum(3, 3);
-  display.writeDigitNum(4, 4);
-  display.writeDisplay();
-  delay(1500);
+  // 时钟 API 测试：这里模拟 RTC 模块读取到的时、分、秒。
+  // 实际配合 RTC 使用时，把 rtcHour、rtcMinute、rtcSecond 替换为 RTC 读出的数据即可。
+  for (uint8_t rtcSecond = 0; rtcSecond < 6; rtcSecond++) {
+    uint8_t rtcHour = 8;
+    uint8_t rtcMinute = 5;
+
+    // 显示 12:34，D1D2 时钟点按秒闪烁。
+    display.showClock(rtcHour, rtcMinute, rtcSecond,
+                      Yfrobot_4bit_7segment::CLOCK_DOTS_BLINK,
+                      true);
+    display.writeDisplay();
+    delay(1000);
+  }
 
   // 计数测试。
   for (uint16_t counter = 0; counter <= 9999; counter += 1111) {
