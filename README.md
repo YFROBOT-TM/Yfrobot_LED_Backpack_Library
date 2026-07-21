@@ -75,13 +75,7 @@ https://item.taobao.com/item.htm?id=853026121301
 - 再设置 `setBrightness()` 或 `blinkRate()`。
 - 修改显示内容后，最后调用 `writeDisplay()`。
 
-#### 2. 条状显示模块 API
-
-##### `Adafruit_24bargraph`
-
-- `setBar(uint8_t bar, uint8_t color)`：设置第 `0 ~ 23` 段条灯颜色。
-- `color` 可用 `LED_OFF / LED_GREEN / LED_YELLOW / LED_RED`。
-- 设置完成后调用 `writeDisplay()` 刷新。
+#### 2. 10段条状显示模块 API
 
 ##### `Yfrobot_10bargraph`
 
@@ -89,41 +83,45 @@ https://item.taobao.com/item.htm?id=853026121301
 - `clearBar(uint8_t bar)`：熄灭指定段。
 - 设置完成后调用 `writeDisplay()` 刷新。
 
-#### 3. 点阵显示模块 API
-以下点阵类都继承 `Adafruit_GFX`，除了 `drawPixel()` 之外，还可以直接使用 `drawLine()`、`drawRect()`、`fillRect()`、`drawChar()`、`setCursor()`、`print()`、`setTextSize()`、`setTextColor()`、`setRotation()` 等图形接口。
-
-##### `Adafruit_8x16matrix`
-
-- `drawPixel(int16_t x, int16_t y, uint16_t color)`：设置单个像素，`color` 通常用 `0 / 1`。
-- 绘图完成后调用 `writeDisplay()` 刷新。
+#### 3. 12列x8行点阵显示模块 API
+以下点阵类继承 `Adafruit_GFX`，除了 `drawPixel()` 之外，还可以直接使用 `drawLine()`、`drawRect()`、`fillRect()`、`drawChar()`、`setCursor()`、`print()`、`setTextSize()`、`setTextColor()`、`setRotation()` 等图形接口。
 
 ##### `Yfrobot_8x12matrix`
 
 - `drawPixel(int16_t x, int16_t y, uint16_t color)`：设置单个像素。
 - 绘图完成后调用 `writeDisplay()` 刷新。
 
-##### `Adafruit_8x16minimatrix`
+#### 4. 3位数码管显示模块 API
 
-- `drawPixel(int16_t x, int16_t y, uint16_t color)`：设置单个像素。
-- 绘图完成后调用 `writeDisplay()` 刷新。
+##### `Yfrobot_3bit_7segment`
 
-##### `Adafruit_8x8matrix`
+- `write(char c)`：写入单个 ASCII 字符，按当前光标位置顺序显示。
+- `write(const char *buffer, size_t size)`：按字符串缓冲顺序显示。
+- `print(char c)`：显示单个字符。
+- `print(int / unsigned int / long / unsigned long / double / String / const char[])`：显示整数、浮点数或字符串。
+- `writeDigitRaw(uint8_t x, uint8_t bitmask)`：按原始段码写入指定位。
+- `writeDigitNum(uint8_t x, uint8_t num, bool dot = false)`：写入数字 `0 ~ 9`，也支持 `A ~ F`。
+- `writeDigitAscii(uint8_t x, uint8_t c, bool dot = false)`：写入 ASCII 字符。
+- `drawColon(bool state)`：控制中间冒号点。
+- `writeColon(void)`：刷新当前冒号状态到屏幕。
+- `printNumber(long n, uint8_t base = 2)`：整数格式化辅助函数。
+- `printFloat(double n, uint8_t fracDigits = 2, uint8_t base = DEC)`：浮点数格式化辅助函数。
+- `printError(void)`：显示错误/溢出状态。
 
-- `drawPixel(int16_t x, int16_t y, uint16_t color)`：设置单个像素。
-- 绘图完成后调用 `writeDisplay()` 刷新。
+##### `Yfrobot_3bit_7segment_tb`
 
-##### `Yfrobot_8x8matrix`
+- `write(char c)`：写入单个 ASCII 字符。
+- `write(const char *buffer, size_t size)`：写入字符串缓冲。
+- `print(double n, int digits = 1)`：显示浮点数，默认保留 1 位小数。
+- `writeDigitRaw(uint8_t x, uint8_t bitmask)`：按原始段码写入指定位。
+- `writeDigitNum(uint8_t x, uint8_t num, bool dot = false)`：写入数字 `0 ~ 9`，也支持 `A ~ F`。
+- `writeDigitAscii(uint8_t x, uint8_t c, bool dot = false)`：写入 ASCII 字符。
+- `drawColon(bool state)`：控制冒号点。
+- `writeColon(uint8_t tb)`：刷新冒号/状态显示。
+- `printFloat(double n, uint8_t fracDigits = 1, uint8_t base = DEC)`：浮点数格式化辅助函数。
+- `printError(void)`：显示错误/溢出状态。
 
-- 这是对 `Adafruit_8x8matrix` 的 YFROBOT 封装，直接使用父类的全部点阵 API。
-- 绘图完成后调用 `writeDisplay()` 刷新。
-
-##### `Adafruit_BicolorMatrix`
-
-- `drawPixel(int16_t x, int16_t y, uint16_t color)`：设置双色像素。
-- `color` 可用 `LED_OFF / LED_GREEN / LED_YELLOW / LED_RED`。
-- 绘图完成后调用 `writeDisplay()` 刷新。
-
-#### 4. 四位数码管 API
+#### 5. 4位数码管显示模块 API
 
 ##### `Yfrobot_4bit_7segment`
 
@@ -152,39 +150,14 @@ https://item.taobao.com/item.htm?id=853026121301
 - 需要手动控制点位时，用 `drawColon()`、`drawDotD3()`、`drawDotD4()`、`drawDotD5()`。
 - 读取 RTC 的小时和分钟后，优先用 `showClock()`，不要再手动拼 `drawColon()`。
 
-##### `Yfrobot_3bit_7segment`
+#### 6. 8x8点阵显示模块 API
+以下点阵类继承 `Adafruit_GFX`，除了 `drawPixel()` 之外，还可以直接使用 `drawLine()`、`drawRect()`、`fillRect()`、`drawChar()`、`setCursor()`、`print()`、`setTextSize()`、`setTextColor()`、`setRotation()` 等图形接口。
 
-- `write(char c)`：写入单个 ASCII 字符。
-- `write(const char *buffer, size_t size)`：写入字符串缓冲。
-- `print(char c)`：显示单个字符。
-- `print(int / unsigned int / long / unsigned long / double / String / const char[])`：显示数字或字符串。
-- `writeDigitRaw(uint8_t x, uint8_t bitmask)`：按原始段码写入指定位。
-- `writeDigitNum(uint8_t x, uint8_t num, bool dot = false)`：写入数字 `0 ~ 9`，也支持 `A ~ F`。
-- `writeDigitAscii(uint8_t x, uint8_t c, bool dot = false)`：写入 ASCII 字符。
-- `drawColon(bool state)`：控制中间冒号点。
-- `writeColon(void)`：刷新当前冒号状态到屏幕。
-- `printNumber(long n, uint8_t base = 2)`：整数格式化辅助函数。
-- `printFloat(double n, uint8_t fracDigits = 2, uint8_t base = DEC)`：浮点数格式化辅助函数。
-- `printError(void)`：显示错误/溢出状态。
+##### `Yfrobot_8x8matrix`
 
-##### `Yfrobot_3bit_7segment_tb`
-
-- `write(char c)`：写入单个 ASCII 字符。
-- `write(const char *buffer, size_t size)`：写入字符串缓冲。
-- `print(double n, int digits = 1)`：显示浮点数，默认保留 1 位小数。
-- `writeDigitRaw(uint8_t x, uint8_t bitmask)`：按原始段码写入指定位。
-- `writeDigitNum(uint8_t x, uint8_t num, bool dot = false)`：写入数字 `0 ~ 9`，也支持 `A ~ F`。
-- `writeDigitAscii(uint8_t x, uint8_t c, bool dot = false)`：写入 ASCII 字符。
-- `drawColon(bool state)`：控制冒号点。
-- `writeColon(uint8_t tb)`：刷新冒号/状态显示。
-- `printFloat(double n, uint8_t fracDigits = 1, uint8_t base = DEC)`：浮点数格式化辅助函数。
-- `printError(void)`：显示错误/溢出状态。
-
-#### 5. 说明
-
-- 点阵类和条状显示类通常是“先绘图/设段，后 `writeDisplay()` 刷新”。
-- 数码管类如果要连续更新，建议每次先清理缓冲再重新写入，避免旧内容残留。
-- 4 位数码管的 `D1 + D2 / D3 / D4 / D5` 属于非标准辅助点位，时钟显示建议直接使用 `showClock()`。
+- 这是对 `Adafruit_8x8matrix` 的 YFROBOT 封装，直接使用父类的全部点阵 API。
+- `drawPixel(int16_t x, int16_t y, uint16_t color)`：设置单个像素，`color` 通常用 `0 / 1`。
+- 绘图完成后调用 `writeDisplay()` 刷新。
 
 ### 说明与建议
 
