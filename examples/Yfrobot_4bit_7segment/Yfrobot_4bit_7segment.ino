@@ -1,13 +1,13 @@
 /***************************************************
   YFROBOT 4-digit 7-segment module test
-  I2C address: 0x73
+  I2C address: 0x74
   If the display does not respond, run an I2C scan and update DISPLAY_ADDR.
  ****************************************************/
 
 #include "Yfrobot_LEDBackpack.h"
 
 // 当前测试使用的 I2C 地址。
-const uint8_t DISPLAY_ADDR = 0x73;  // 临时测试地址
+const uint8_t DISPLAY_ADDR = 0x74;  // 已确认默认地址
 
 // 创建 4 位数码管对象。
 Yfrobot_4bit_7segment display = Yfrobot_4bit_7segment();

@@ -863,6 +863,35 @@ void Adafruit_8x8matrix::drawPixel(int16_t x, int16_t y, uint16_t color) {
   }
 }
 
+void Yfrobot_8x8matrix::drawPixel(int16_t x, int16_t y, uint16_t color) {
+  if ((y < 0) || (y >= 8))
+    return;
+  if ((x < 0) || (x >= 8))
+    return;
+
+  switch (getRotation()) {
+  case 1:
+    _swap_int16_t(x, y);
+    x = 8 - x - 1;
+    break;
+  case 2:
+    x = 8 - x - 1;
+    y = 8 - y - 1;
+    break;
+  case 3:
+    _swap_int16_t(x, y);
+    y = 8 - y - 1;
+    break;
+  }
+
+  // YFROBOT 8x8 模块实测不需要旧版 Adafruit 的列循环平移。
+  if (color) {
+    displaybuffer[y] |= 1 << x;
+  } else {
+    displaybuffer[y] &= ~(1 << x);
+  }
+}
+
 /******************************* 8x8 BICOLOR MATRIX OBJECT */
 
 Adafruit_BicolorMatrix::Adafruit_BicolorMatrix(void) : Adafruit_GFX(8, 8) {}

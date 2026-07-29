@@ -22,7 +22,7 @@ void setup() {
   Serial.begin(9600);
   Serial.println("16x8 LED Matrix Test");
 
-  matrix.begin(0x70);       // pass in the address
+  matrix.begin(0x71);       // pass in the address
   matrix.setBrightness(1);  // level 0-15
 }
 

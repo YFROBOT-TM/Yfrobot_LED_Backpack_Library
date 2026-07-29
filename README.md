@@ -155,7 +155,8 @@ https://item.taobao.com/item.htm?id=853026121301
 
 ##### `Yfrobot_8x8matrix`
 
-- 这是对 `Adafruit_8x8matrix` 的 YFROBOT 封装，直接使用父类的全部点阵 API。
+- 这是对 `Adafruit_8x8matrix` 的 YFROBOT 封装，保留 `setRotation(0 / 1 / 2 / 3)` 等图形 API。
+- 当前模块默认 I2C 地址为 `0x72`，实测正方向推荐使用 `setRotation(0)`。
 - `drawPixel(int16_t x, int16_t y, uint16_t color)`：设置单个像素，`color` 通常用 `0 / 1`。
 - 绘图完成后调用 `writeDisplay()` 刷新。
 
@@ -181,6 +182,7 @@ https://item.taobao.com/item.htm?id=853026121301
 
 ---
 ## 更新日志
+- V0.0.4: 修复8X8单色点阵显示驱动程序；
 - V0.0.3: 新增4位8段数码管显示模块 时钟模式下显示功能；
 - V0.0.2: 更新支持4位8段数码管显示模块、8X8 单色点阵显示模块；
 - V0.0.1: 初始版本，支持3位7段数码管显示模块、10位条状显示模块、8x12（8行12列）LED Matrix 显示模块、3位7段温湿度数码管显示模块。
