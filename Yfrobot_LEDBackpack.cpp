@@ -892,6 +892,36 @@ void Yfrobot_8x8matrix::drawPixel(int16_t x, int16_t y, uint16_t color) {
   }
 }
 
+void Yfrobot_8x8matrix::fillScreen(uint16_t color) {
+  Adafruit_GFX::fillScreen(color);
+}
+
+void Yfrobot_8x8matrix::scrollMessage(const String &s,
+                                      int displayScrollSpeed) {
+  int16_t startX = width() - 1;
+  int16_t endX = -(int16_t)s.length() * 6;
+
+  setTextSize(1);
+  setTextWrap(false);
+  setTextColor(LED_ON);
+
+  for (int16_t x = startX; x >= endX; --x) {
+    clear();
+    setCursor(x, 0);
+    print(s);
+    writeDisplay();
+    delay(displayScrollSpeed);
+  }
+}
+
+void Yfrobot_8x8matrix::scrollMessage(int num, int displayScrollSpeed) {
+  scrollMessage(String(num), displayScrollSpeed);
+}
+
+void Yfrobot_8x8matrix::scrollMessage(float num, int displayScrollSpeed) {
+  scrollMessage(String(num), displayScrollSpeed);
+}
+
 /******************************* 8x8 BICOLOR MATRIX OBJECT */
 
 Adafruit_BicolorMatrix::Adafruit_BicolorMatrix(void) : Adafruit_GFX(8, 8) {}

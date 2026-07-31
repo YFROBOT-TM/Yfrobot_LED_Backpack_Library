@@ -284,6 +284,10 @@ class Yfrobot_8x8matrix : public Adafruit_8x8matrix {
 public:
   Yfrobot_8x8matrix(void) : Adafruit_8x8matrix() {}
   void drawPixel(int16_t x, int16_t y, uint16_t color);
+  void fillScreen(uint16_t color);
+  void scrollMessage(const String &s, int displayScrollSpeed = 300);
+  void scrollMessage(int num, int displayScrollSpeed = 300);
+  void scrollMessage(float num, int displayScrollSpeed = 300);
 };
 
 /*!

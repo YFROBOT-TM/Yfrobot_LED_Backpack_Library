@@ -158,6 +158,10 @@ https://item.taobao.com/item.htm?id=853026121301
 - 这是对 `Adafruit_8x8matrix` 的 YFROBOT 封装，保留 `setRotation(0 / 1 / 2 / 3)` 等图形 API。
 - 当前模块默认 I2C 地址为 `0x72`，实测正方向推荐使用 `setRotation(0)`。
 - `drawPixel(int16_t x, int16_t y, uint16_t color)`：设置单个像素，`color` 通常用 `0 / 1`。
+- `fillScreen(uint16_t color)`：快速点亮或熄灭整屏，适合做整屏测试、清屏测试或全屏提示。
+- `scrollMessage(const String &s, int displayScrollSpeed = 300)`：让字符串从右向左自动滚动显示，第二个参数是滚动速度，单位毫秒。
+- `scrollMessage(int num, int displayScrollSpeed = 300)`：把整数转成字符串后滚动显示。
+- `scrollMessage(float num, int displayScrollSpeed = 300)`：把浮点数转成字符串后滚动显示。
 - 绘图完成后调用 `writeDisplay()` 刷新。
 
 ### 说明与建议
@@ -182,6 +186,7 @@ https://item.taobao.com/item.htm?id=853026121301
 
 ---
 ## 更新日志
+- V0.0.5: 新增8X8单色点阵显示 滚动显示API；
 - V0.0.4: 修复8X8单色点阵显示驱动程序；
 - V0.0.3: 新增4位8段数码管显示模块 时钟模式下显示功能；
 - V0.0.2: 更新支持4位8段数码管显示模块、8X8 单色点阵显示模块；
